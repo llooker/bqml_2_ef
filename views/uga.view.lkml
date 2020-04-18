@@ -1,5 +1,5 @@
 view: uga {
-  sql_table_name: `graphic-theory-197904.google_sheet_stock.uga`
+  sql_table_name: (SELECT * FROM `graphic-theory-197904.google_sheet_stock.uga` WHERE date is not null)
     ;;
 
   dimension: close {
@@ -8,8 +8,9 @@ view: uga {
   }
 
   dimension: date {
-    type: string
-    sql: ${TABLE}.Date ;;
+    type: date
+    datatype: date
+    sql: PARSE_DATE('%m/%d/%Y',${TABLE}.Date) ;; #11/14/2017 16:00:00
   }
 
   dimension: high {
