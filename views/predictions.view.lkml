@@ -2,10 +2,11 @@ view: predictions_base {
   derived_table: {
     explore_source: uga {
       column: date {}
+      column: now_diff {}
       column: close {}
     }
   }
-  dimension: date {}
+  dimension: now_diff {}
   dimension: close {
     type: number
   }
@@ -15,13 +16,13 @@ view: predictions_base {
 view: training_input {
   extends: [predictions_base]
   derived_table: {
-    persist_for: "1 hour"
     explore_source: uga {
+      column: now_diff {}
       column: date {}
       column: close {}
       filters: {
         field: uga.date
-        value: "365 days ago for 364 days"
+        value: "30 days ago for 30 days"
       }
     }
   }
@@ -53,19 +54,22 @@ view: training_input {
 #   }
 # }
 ######################## MODEL #############################
-
+explore:future_purchase_model  {}
 view: future_purchase_model {
   derived_table: {
-    datagroup_trigger: bqml_datagroup
+
+    persist_for: "1 hour"
+#     datagroup_trigger: bqml_datagroup
     sql_create:
       CREATE OR REPLACE MODEL ${SQL_TABLE_NAME}
       OPTIONS(model_type='LINEAR_REG'
         , labels=['close']
         ) AS
       SELECT
-         *
+         * EXCEPT(date)
       FROM ${training_input.SQL_TABLE_NAME};;
   }
+  dimension: test {sql: 1 ;;}
 }
 
 ######################## TRAINING INFORMATION #############################
@@ -167,6 +171,7 @@ view: future_purchase_model_training_info {
 view: future_input {
   derived_table: {
     explore_source: future_dates {
+      column: now_diff { field: future_dates.now_diff}
       column: date { field: future_dates.dt}
       filters: {
         field: future_dates.dt
@@ -183,7 +188,8 @@ view: future_purchase_prediction {
           MODEL ${future_purchase_model.SQL_TABLE_NAME},
           (SELECT * FROM ${future_input.SQL_TABLE_NAME}));;
   }
-  dimension: date {type: date}
+  dimension: now_diff {type: number}
+  dimension: date {type: date datatype: date}
   dimension: predicted_close {
     type: number
   }

@@ -13,6 +13,18 @@ view: uga {
     sql: PARSE_DATE('%m/%d/%Y',${TABLE}.Date) ;; #11/14/2017 16:00:00
   }
 
+  dimension: now {
+    type: date
+    expression: now() ;;
+  }
+
+  dimension: now_diff {
+    type: duration_day
+    datatype: date
+    sql_end: ${date::date} ;;
+    sql_start: ${now::date} ;;
+  }
+
   dimension: high {
     type: number
     sql: ${TABLE}.High ;;

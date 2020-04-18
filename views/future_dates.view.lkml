@@ -12,4 +12,17 @@ FROM UNNEST(GENERATE_ARRAY(0,100,1)) n
     datatype: date
     sql: ${TABLE}.dt ;;
   }
+
+  dimension: now {
+    type: date
+    expression: now() ;;
+  }
+
+  dimension: now_diff {
+    type: duration_day
+    datatype: date
+    sql_end: ${dt::date} ;;
+    sql_start: ${now::date} ;;
+  }
+
 }

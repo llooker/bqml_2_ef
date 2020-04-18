@@ -14,7 +14,7 @@ datagroup: bqml_datagroup {
 explore: uga {}
 explore: future_dates {}
 explore: future_purchase_prediction {}
-
+explore: union_predict {}
 
 #
 # ######################## TRAINING/TESTING INPUTS #############################
