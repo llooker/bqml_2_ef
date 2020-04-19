@@ -11,4 +11,13 @@ view: union_predict {
     type: number
   }
   dimension: date {type: date datatype: date}
+
+  filter: training_label {
+    suggestions: ["open"]
+  }
+
+  filter: slider {
+    type: number
+  }
+
 }

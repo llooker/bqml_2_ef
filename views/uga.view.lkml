@@ -2,6 +2,7 @@ view: uga {
   sql_table_name: (SELECT * FROM `graphic-theory-197904.google_sheet_stock.uga` WHERE date is not null)
     ;;
 
+
   dimension: close {
     type: number
     sql: ${TABLE}.Close ;;
