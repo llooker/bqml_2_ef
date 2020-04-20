@@ -10,7 +10,11 @@ view: union_predict {
   dimension: close {
     type: number
   }
-  dimension: date {type: date datatype: date}
+  dimension: date {
+    type: date
+    datatype: date
+    sql: date(${TABLE}.date) ;;
+    }
 
   filter: training_label {
     suggestions: ["open"]
