@@ -101,7 +101,7 @@ view: training_input {
 view: future_purchase_model {
   derived_table: {
 
-    persist_for: "1 hour"
+    persist_for: "24 hours"
 #     datagroup_trigger: bqml_datagroup
     sql_create:
       CREATE OR REPLACE MODEL ${SQL_TABLE_NAME}
