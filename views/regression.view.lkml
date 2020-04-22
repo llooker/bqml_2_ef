@@ -192,7 +192,7 @@ view: future_purchase_prediction {
           (SELECT * FROM ${future_dates.SQL_TABLE_NAME}))
           ;;
   }
-            # (SELECT * FROM ${future_input.SQL_TABLE_NAME}))
+  # (SELECT * FROM ${future_input.SQL_TABLE_NAME}))
   dimension: now_diff {type: number}
   dimension: date {type: date datatype: date}
   dimension: predicted_close {
@@ -208,19 +208,40 @@ explore: future_purchase_prediction {}
 view: union_predict {
   derived_table: {
     sql:
-    SELECT date, now_diff, close FROM ${predictions_base.SQL_TABLE_NAME}
+    SELECT date, now_diff, close, 0 as future FROM ${predictions_base.SQL_TABLE_NAME}
     UNION ALL
-    SELECT date, now_diff, predicted_close  FROM ${future_purchase_prediction.SQL_TABLE_NAME}
+    SELECT date, now_diff, predicted_close, 1 as future  FROM ${future_purchase_prediction.SQL_TABLE_NAME}
     ;;
   }
   dimension: now_diff { type: number }
   dimension: close {
     type: number
   }
+  dimension: future {
+    type: number
+  }
   dimension: date {
     type: date
     datatype: date
     sql: date(${TABLE}.date) ;;
+  }
+
+  measure: max_of_close_current {
+    type: max
+    sql: ${close};;
+    filters: [future: "0"]
+    value_format_name: usd
+  }
+
+  measure: max_of_close_future {
+    type: max
+    sql: ${close};;
+    filters: [future: "1"]
+    value_format_name: usd
+    link: {
+      label: "Shipment Operations Dashboard"
+      url: "/extensions/ef_2_bqml::aes_regression/shipment-operations"
+    }
   }
 
   filter: training_label {
