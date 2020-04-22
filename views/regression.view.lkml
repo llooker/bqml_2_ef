@@ -1,6 +1,6 @@
 ##### Step 1 -- Raw Data #######
 view: uga {
-  sql_table_name: (SELECT * FROM `graphic-theory-197904.google_sheet_stock.uga` WHERE date is not null)
+  sql_table_name: (SELECT *, 90 as temp FROM `graphic-theory-197904.google_sheet_stock.uga` WHERE date is not null)
     ;;
 
   dimension: close {
@@ -51,6 +51,8 @@ view: uga {
     sql: ${TABLE}.Volume ;;
   }
 
+  dimension: temp { type: number }
+
   measure: count {
     type: count
     drill_fields: []
@@ -75,6 +77,7 @@ view: predictions_base {
   dimension: low {}
   dimension: open {}
   dimension: volume {}
+  dimension: temp {}
 }
 
 view: training_input {
@@ -88,6 +91,7 @@ view: training_input {
       column: high {}
       column: low {}
       column: volume {}
+      column: temp {}
       filters: {
         field: uga.date
         value: "30 days ago for 30 days"
@@ -101,15 +105,15 @@ view: training_input {
 view: future_purchase_model {
   derived_table: {
 
-    persist_for: "24 hours"
-#     datagroup_trigger: bqml_datagroup
+    # persist_for: "24 hours"
+    sql_trigger_value: select 1 ;;
     sql_create:
       CREATE OR REPLACE MODEL ${SQL_TABLE_NAME}
       OPTIONS(model_type='LINEAR_REG'
         , labels=["close"]
         ) AS
       SELECT
-         date, now_diff, close, {{ _filters['union_predict.training_label'] }}
+         date, now_diff, close, temp, {{ _filters['union_predict.training_label'] }}
       FROM ${training_input.SQL_TABLE_NAME};;
   }
   dimension: test {sql: 1 ;;}
@@ -118,25 +122,26 @@ view: future_purchase_model {
 explore:future_purchase_model  {}
 
 ### Step 4 -- create a calendar table of future data (which also btw includes the other independent variables....)  ####
-
 view: future_dates {
   derived_table: {
     sql:
       SELECT
         CAST(DATE_ADD(CURRENT_DATE(), INTERVAL 1* n DAY) as TIMESTAMP) as date,
         CAST(TIMESTAMP_DIFF(CAST((DATE(TIMESTAMP_TRUNC(CAST(CAST(DATE_ADD(CURRENT_DATE(), INTERVAL 1* n DAY)  AS TIMESTAMP) AS TIMESTAMP), DAY)))  AS TIMESTAMP), CAST((DATE(TIMESTAMP_TRUNC(CAST(CURRENT_TIMESTAMP AS TIMESTAMP), DAY)))  AS TIMESTAMP), DAY) AS INT64) AS now_diff,
-
-        null as volume,
-        {{ _filters['union_predict.slider_open'] }} as open,
-        {{ _filters['union_predict.slider_high'] }} as high,
-        {{ _filters['union_predict.slider_low'] }} as low
+        {{ _filters['union_predict.slider_temp'] }} as temp,
+       {% if union_predict.volatility_scenario._parameter_value == "'high'" %}  1415149 {% elsif union_predict.volatility_scenario._parameter_value == "'medium'"%} 50454 {% else %} 1282 {% endif %} as volume,
+        {% if union_predict.volatility_scenario._parameter_value == "'high'" %} 15 {% elsif union_predict.volatility_scenario._parameter_value == "'medium'"%} 20 {% else %} null {% endif %} as open,
+        {% if union_predict.volatility_scenario._parameter_value == "'high'" %} 40 {% elsif union_predict.volatility_scenario._parameter_value == "'medium'"%} 20 {% else %} null {% endif %} as high,
+        {% if union_predict.volatility_scenario._parameter_value == "'high'" %} 9 {% elsif union_predict.volatility_scenario._parameter_value == "'medium'"%} 12 {% else %} null {% endif %} as low,
       FROM UNNEST(GENERATE_ARRAY(0,100,1)) n
       WHERE
       1=1
       AND DATE_ADD(CURRENT_DATE(), INTERVAL 1* n DAY) <= DATE_ADD(current_Date(), INTERVAL {{ _filters['union_predict.slider_prediction_horizon'] }} day)
-      --slider_prediction_horizon
        ;;
   }
+
+
+
 
 
   dimension: dt {
@@ -161,6 +166,7 @@ view: future_dates {
   dimension: open {}
   dimension: high {}
   dimension: low {}
+  dimension: temp {}
 
 
 }
@@ -260,12 +266,40 @@ view: union_predict {
     type: number
   }
 
+  filter: slider_temp {
+    type: number
+  }
+
   filter: slider_prediction_horizon {
     type: number
+  }
+
+
+  parameter: volatility_scenario {
+    allowed_value: {
+      label: "High Volatility"
+      value: "high"
+    }
+    allowed_value: {
+      label: "Medium Volatility"
+      value: "medium"
+    }
+    allowed_value: {
+      label: "Low Volatility"
+      value: "low"
+    }
+
   }
 
 
 
 }
 
-explore: union_predict {}
+explore: union_predict {
+  always_filter: {
+    filters: [slider_temp: "90", volatility_scenario: "low", slider_prediction_horizon: "30"]
+
+  }
+
+
+}

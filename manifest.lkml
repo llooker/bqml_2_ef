@@ -1,5 +1,5 @@
 application: aes_regression {
-  label: "Fuel Price Predictor"
-  # url: "http://localhost:8080/bundle.js"
-  file: "js/bundle.js"
+  label: "AES Fuels PPO Application"
+  url: "http://localhost:8080/bundle.js"
+#   file: "js/bundle.js"
 }
