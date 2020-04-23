@@ -25,7 +25,7 @@
     limit: 500
     column_limit: 50
     dynamic_fields: [{measure: max_of_close, based_on: union_predict.close, type: max,
-        label: max_of_close, expression: !!null '', value_format: !!null '', value_format_name: usd,
+        label: Max of Close, expression: !!null '', value_format: !!null '', value_format_name: usd,
         _kind_hint: measure, _type_hint: number}]
     query_timezone: America/Los_Angeles
     x_axis_gridlines: true
