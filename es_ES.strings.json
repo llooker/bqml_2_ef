@@ -1,0 +1,11 @@
+{
+  "price_prediction": "Predicción de Precios",
+  "date": "Fecha",
+  "max_of_close": "Precio Máximo de Cierre",
+  "forecast_length": "Duración del Pronóstico",
+  "market_volatility": "Volatilidad del Mercado",
+  "avg_future_temp": "Promedio de La Temperatura Futura",
+  "high_volatility": "Alta Volatilidad",
+  "medium_volatility": "Media Volatilidad ",
+  "low_volatility": "Baja Volatilidad"
+}

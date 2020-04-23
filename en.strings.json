@@ -1,0 +1,11 @@
+{
+  "price_prediction": "Price Prediction",
+  "date": "Date",
+  "max_of_close": "Max of Close",
+  "forecast_length": "Forecast Length",
+  "market_volatility": "Market Volatility",
+  "avg_future_temp": "Avg Future Temp",
+  "high_volatility": "High Volatility",
+  "medium_volatility": "Medium Volatility",
+  "low_volatility": "Low Volatility"
+}

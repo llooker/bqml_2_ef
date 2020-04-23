@@ -227,6 +227,7 @@ view: union_predict {
     type: number
   }
   dimension: date {
+    label: "date"
     type: date
     datatype: date
     sql: date(${TABLE}.date) ;;
@@ -277,15 +278,15 @@ view: union_predict {
 
   parameter: volatility_scenario {
     allowed_value: {
-      label: "High Volatility"
+      label: "high_volatility"
       value: "high"
     }
     allowed_value: {
-      label: "Medium Volatility"
+      label: "medium_volatility"
       value: "medium"
     }
     allowed_value: {
-      label: "Low Volatility"
+      label: "low_volatility"
       value: "low"
     }
 
