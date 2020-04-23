@@ -245,9 +245,33 @@ view: union_predict {
     sql: ${close};;
     filters: [future: "1"]
     value_format_name: usd
-    link: {
-      label: "Shipment Operations Dashboard"
-      url: "/extensions/ef_2_bqml::aes_regression/shipment-operations"
+    action: {
+      label: "Manually Override Prediction"
+      url: "https://desolate-refuge-53336.herokuapp.com/posts"
+      param: {
+        name: "some_auth_code"
+        value: "abc123456"
+      }
+      form_param: {
+        name: "Updated Prediction"
+        required: yes
+      }
+    }
+    action: {
+      label: "Set Alert/Reminder"
+      url: "https://desolate-refuge-53336.herokuapp.com/posts"
+      param: {
+        name: "some_auth_code"
+        value: "abc123456"
+      }
+      form_param: {
+        name: "Alert Threshold"
+        required: no
+      }
+      form_param: {
+        name: "Reminder Date"
+        required: no
+      }
     }
   }
 
