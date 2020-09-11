@@ -1,5 +1,7 @@
 ##### Step 1 -- Raw Data #######
-explore: uga {}
+explore: uga_1 {
+  from: uga
+}
 view: uga {
   sql_table_name: (SELECT *, 90 as temp FROM `graphic-theory-197904.google_sheet_stock.uga` WHERE date is not null)
     ;;
