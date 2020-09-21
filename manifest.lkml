@@ -1,4 +1,4 @@
-application: aes_regression {
+application: fuelco {
   label: "FuelCo PPO Application"
   # url: "http://localhost:8080/bundle.js"
   file: "js/bundle.js"
